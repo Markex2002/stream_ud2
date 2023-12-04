@@ -144,9 +144,13 @@ class TestExamenStream {
             List<Oficina> list = oficinaHome.findAll();
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream().sorted(comparing(Oficina::getCiudad).reversed())
+                    .filter(c -> c.getPais().equalsIgnoreCase("España"))
+                    .map(c -> c.getCiudad() + ", tlf: " + c.getTelefono());
+
 
             solList.forEach(System.out::println);
+
 
             oficinaHome.commitTransaction();
         } catch (RuntimeException e) {
@@ -172,7 +176,9 @@ class TestExamenStream {
             List<Empleado> list = empleadoHome.findAll();
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream()
+                    .filter(e -> e.getJefe() != null && e.getJefe().getCodigoEmpleado() == 7)
+                    .map(e -> e.getNombre() + " " + e.getApellido1() + " " + e.getApellido2() + ", email: " + e.getEmail());
 
             solList.forEach(System.out::println);
 
@@ -200,7 +206,10 @@ class TestExamenStream {
             List<Cliente> list = clienteHome.findAll();
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream().sorted(comparing((Cliente c) -> c.getRepresentanteVentas().getApellido1())
+                            .reversed()
+                            .thenComparing(Cliente::getNombreCliente))
+                    .map(c -> c.getNombreCliente() + ", Representante: " + c.getEmpleado().getApellido1());
 
             solList.forEach(System.out::println);
 
@@ -214,8 +223,9 @@ class TestExamenStream {
 
     /**
      * TEST4
-     * Devuelve un listado de todos los pedidos que fueron rechazados en 2009 ordenados por fecha descendiente. Mostrando la información de fecha de pedido en formato yyyy-MM-dd, nombre de cliente
-     * estado, representante de ventas, estado.
+     * Devuelve un listado de todos los pedidos que fueron rechazados en 2009 ordenados por
+     * fecha descendiente. Mostrando la información de fecha de pedido en formato yyyy-MM-dd, nombre de cliente
+     * representante de ventas, estado.
      */
     @Test
     void test4() {
@@ -238,7 +248,11 @@ class TestExamenStream {
             }
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream()
+                    .sorted(comparing(Pedido::getFechaPedido).reversed())
+                    .filter( p -> p.getEstado().equalsIgnoreCase("Rechazado"))
+                    .map(p -> p.getFechaPedido() + ", cliente: " + p.getCliente().getNombreCliente()
+                            + ", " + p.getEstado() + ", Representante: " + p.getCliente().getRepresentanteVentas().getNombre());
 
             solList.forEach(System.out::println);
 
@@ -264,7 +278,9 @@ class TestExamenStream {
             List<Cliente> list = clienteHome.findAll();
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream().sorted(comparing(Cliente::getNombreCliente))
+                    .filter(c -> c.getRegion() != null && !c.getPais().equalsIgnoreCase("Spain"))
+                    .map(c -> c.getNombreCliente() + ", Region: " + c.getPais());
 
             solList.forEach(System.out::println);
 
@@ -317,7 +333,7 @@ class TestExamenStream {
             List<Cliente> list = clienteHome.findAll();
 
             //TODO STREAMS
-            var solList = list.stream();
+            var solList = list.stream().filter(cliente -> cliente.getPagos().isEmpty() && !cliente.getPedidos().isEmpty());
 
             solList.forEach(System.out::println);
 
